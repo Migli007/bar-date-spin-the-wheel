@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <meta name="theme-color" content="#0d0b10" />
+
+  <title>Truth or Drink 🍸</title>
+
+  <style>
+    :root {
+      --bg: #0d0b10;
+      --surface: #151219;
+      --surface-2: #1c1720;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #f8f4f8;
+      --muted: #a9a1ab;
+      --accent: #c78aff;
+      --accent-2: #8f5cc4;
+      --gold: #e5bd78;
+      --danger: #e982a8;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(
+          circle at 50% -10%,
+          rgba(157, 91, 190, 0.2),
+          transparent 42%
+        ),
+        var(--bg);
+      color: var(--text);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+
+    /* ---------------- HEADER ---------------- */
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(36px, 10vw, 52px);
+      line-height: 1;
+      font-weight: 500;
+      letter-spacing: -1.5px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    /* ---------------- MODE SELECTOR ---------------- */
+
+    .mode-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      background: var(--surface);
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 24px;
+    }
+
+    .mode-btn {
+      min-height: 46px;
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 750;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .mode-btn.active {
+      background: var(--surface-2);
+      color: var(--text);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .mode-btn.truth.active {
+      color: #d7a7ff;
+    }
+
+    .mode-btn.dare.active {
+      color: #ff9fbd;
+    }
+
+    /* ---------------- WHEEL ---------------- */
+
+    .wheel-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .pointer {
+      position: relative;
+      z-index: 5;
+      width: 0;
+      height: 0;
+      margin-bottom: -8px;
+      border-left: 13px solid transparent;
+      border-right: 13px solid transparent;
+      border-top: 27px solid var(--gold);
+      filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.6));
+    }
+
+    .wheel-container {
+      position: relative;
+      width: min(88vw, 370px);
+      aspect-ratio: 1;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+
+      background:
+        conic-gradient(
+          from -30deg,
+          #68407d 0deg 60deg,
+          #75445e 60deg 120deg,
+          #465a78 120deg 180deg,
+          #755637 180deg 240deg,
+          #3e6c5b 240deg 300deg,
+          #55517b 300deg 360deg
+        );
+
+      border: 9px solid #26202a;
+
+      box-shadow:
+        0 0 0 2px rgba(229, 189, 120, 0.25),
+        0 18px 45px rgba(0, 0, 0, 0.5),
+        inset 0 0 35px rgba(0, 0, 0, 0.35);
+
+      transform: rotate(0deg);
+      transition:
+        transform 4.2s cubic-bezier(0.12, 0.72, 0.12, 1);
+
+      will-change: transform;
+    }
+
+    .wheel::after {
+      content: "";
+      position: absolute;
+      inset: 23%;
+      border-radius: 50%;
+      background:
+        radial-gradient(
+          circle,
+          #211b24 0%,
+          #161219 70%
+        );
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 0 0 8px rgba(0, 0, 0, 0.15),
+        inset 0 5px 18px rgba(0, 0, 0, 0.45);
+      z-index: 2;
+    }
+
+    .wheel-center {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .center-text {
+      width: 26%;
+      text-align: center;
+      font-family: Georgia, serif;
+      font-size: 15px;
+      line-height: 1.1;
+      color: #eee4ef;
+    }
+
+    .wheel-label {
+      position: absolute;
+      z-index: 4;
+      left: 50%;
+      top: 50%;
+      width: 40%;
+      height: 24px;
+      margin-left: -20%;
+      margin-top: -12px;
+
+      text-align: center;
+      color: white;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1.4px;
+
+      pointer-events: none;
+    }
+
+    /*
+      Six labels correspond to the six wheel sections.
+      They are rotated around the center.
+    */
+
+    .label-1 {
+      transform: rotate(30deg) translateY(-130px);
+    }
+
+    .label-2 {
+      transform: rotate(90deg) translateY(-130px);
+    }
+
+    .label-3 {
+      transform: rotate(150deg) translateY(-130px);
+    }
+
+    .label-4 {
+      transform: rotate(210deg) translateY(-130px);
+    }
+
+    .label-5 {
+      transform: rotate(270deg) translateY(-130px);
+    }
+
+    .label-6 {
+      transform: rotate(330deg) translateY(-130px);
+    }
+
+    /* ---------------- SPIN BUTTON ---------------- */
+
+    .spin-button {
+      width: min(88vw, 370px);
+      min-height: 58px;
+      margin-top: 22px;
+
+      border: 1px solid rgba(229, 189, 120, 0.35);
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(199, 138, 255, 0.22),
+          rgba(229, 189, 120, 0.12)
+        );
+
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        inset 0 1px rgba(255, 255, 255, 0.08);
+
+      transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+    }
+
+    .spin-button:active {
+      transform: scale(0.97);
+    }
+
+    .spin-button:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    /* ---------------- RESULT ---------------- */
+
+    .result-card {
+      margin-top: 24px;
+      padding: 22px 19px;
+
+      min-height: 145px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.045),
+          rgba(255, 255, 255, 0.015)
+        );
+
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    }
+
+    .result-type {
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+
+    .result-text {
+      margin-top: 10px;
+      max-width: 500px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(19px, 5vw, 24px);
+      line-height: 1.35;
+    }
+
+    .drink-hint {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* ---------------- CONTROLS ---------------- */
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .secondary-button {
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--surface);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .secondary-button:active {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    /* ---------------- STATS ---------------- */
+
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .stats span {
+      opacity: 0.9;
+    }
+
+    /* ---------------- MODAL ---------------- */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+
+      padding: 18px;
+
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(7px);
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(100%, 520px);
+      padding: 22px;
+
+      border: 1px solid var(--border);
+      border-radius: 22px;
+
+      background: #17131a;
+      box-shadow: 0 -10px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .modal h2 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 25px;
+      font-weight: 500;
+    }
+
+    .modal p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 9px 0 18px;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    /* ---------------- RESPONSIVE ---------------- */
+
+    @media (max-width: 390px) {
+      .app {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .wheel-container {
+        width: min(86vw, 330px);
+      }
+
+      .label-1,
+      .label-2,
+      .label-3,
+      .label-4,
+      .label-5,
+      .label-6 {
+        transform-origin: center;
+      }
+
+      .label-1 {
+        transform: rotate(30deg) translateY(-116px);
+      }
+
+      .label-2 {
+        transform: rotate(90deg) translateY(-116px);
+      }
+
+      .label-3 {
+        transform: rotate(150deg) translateY(-116px);
+      }
+
+      .label-4 {
+        transform: rotate(210deg) translateY(-116px);
+      }
+
+      .label-5 {
+        transform: rotate(270deg) translateY(-116px);
+      }
+
+      .label-6 {
+        transform: rotate(330deg) translateY(-116px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .wheel {
+        transition: none;
+      }
+
+      .spin-button,
+      .secondary-button {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <header class="header">
+      <div class="eyebrow">Tonight's game</div>
+      <h1>Truth or Drink</h1>
+      <div class="subtitle">
+        Spin it. Do it. Or take a drink.
+      </div>
+    </header>
+
+    <!-- MODE -->
+
+    <section class="mode-selector" aria-label="Game mode">
+
+      <button
+        type="button"
+        class="mode-btn truth"
+        data-mode="truth"
+      >
+        Truth
+      </button>
+
+      <button
+        type="button"
+        class="mode-btn dare"
+        data-mode="dare"
+      >
+        Dare
+      </button>
+
+      <button
+        type="button"
+        class="mode-btn active"
+        data-mode="mixed"
+      >
+        Mixed
+      </button>
+
+    </section>
+
+    <!-- WHEEL -->
+
+    <section class="wheel-section">
+
+      <div class="pointer"></div>
+
+      <div class="wheel-container">
+
+        <div
+          id="wheel"
+          class="wheel"
+          aria-label="Truth or Drink spinning wheel"
+        >
+
+          <div class="wheel-label label-1">
+            TRUTH
+          </div>
+
+          <div class="wheel-label label-2">
+            DARE
+          </div>
+
+          <div class="wheel-label label-3">
+            FLIRTY
+          </div>
+
+          <div class="wheel-label label-4">
+            CHAOS
+          </div>
+
+          <div class="wheel-label label-5">
+            DRINK
+          </div>
+
+          <div class="wheel-label label-6">
+            WILD
+          </div>
+
+          <div class="wheel-center">
+            <div class="center-text">
+              SPIN<br />
+              ME
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <button
+        id="spinButton"
+        class="spin-button"
+        type="button"
+      >
+        SPIN THE WHEEL
+      </button>
+
+    </section>
+
+    <!-- RESULT -->
+
+    <section
+      id="resultCard"
+      class="result-card"
+      aria-live="polite"
+    >
+
+      <div
+        id="resultType"
+        class="result-type"
+      >
+        YOUR CHALLENGE
+      </div>
+
+      <div
+        id="resultText"
+        class="result-text"
+      >
+        Give the wheel a spin 👀
+      </div>
+
+      <div
+        id="drinkHint"
+        class="drink-hint"
+      >
+        Refuse the challenge? Take a drink.
+      </div>
+
+    </section>
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+      <button
+        id="anotherButton"
+        class="secondary-button"
+        type="button"
+      >
+        Another One
+      </button>
+
+      <button
+        id="resetButton"
+        class="secondary-button"
+        type="button"
+      >
+        Reset Game
+      </button>
+
+    </div>
+
+    <!-- STATS -->
+
+    <div class="stats">
+      <span id="remainingCount">
+        30 challenges left
+      </span>
+
+      <span>•</span>
+
+      <span id="modeLabel">
+        Mixed mode
+      </span>
+    </div>
+
+  </main>
+
+
+  <!-- RESET CONFIRMATION -->
+
+  <div
+    id="modalBackdrop"
+    class="modal-backdrop"
+  >
+
+    <div class="modal">
+
+      <h2>Start over?</h2>
+
+      <p>
+        This will put all challenges back into the wheel,
+        including the ones you've already used.
+      </p>
+
+      <div class="modal-actions">
+
+        <button
+          id="cancelReset"
+          class="secondary-button"
+          type="button"
+        >
+          Cancel
+        </button>
+
+        <button
+          id="confirmReset"
+          class="secondary-button"
+          type="button"
+        >
+          Reset
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    /*
+     * ============================================================
+     * TRUTH OR DRINK
+     * ============================================================
+     *
+     * Everything is contained in this file.
+     *
+     * No:
+     * - npm
+     * - frameworks
+     * - APIs
+     * - external libraries
+     *
+     * Just open index.html.
+     * ============================================================
+     */
+
+
+    /* ---------------- QUESTIONS ---------------- */
+
+    const truthQuestions = [
+
+      "What's something you find attractive that you'd be embarrassed to admit?",
+
+      "What's the most questionable decision you've made because you liked someone?",
+
+      "What was your first impression of me?",
+
+      "What's your most irrational ick that makes absolutely no sense?",
+
+      "What's something you've done on a date that you'd never admit to your friends?",
+
+      "If I could read one conversation from your phone, which one would you choose?",
+
+      "What's the closest you've come to saying 'I love you' and stopping yourself?",
+
+      "What's something you secretly want someone you're dating to do for you?",
+
+      "If we met five years earlier, do you think we'd have gotten along?",
+
+      "What's one thing about me you've been curious about but haven't asked yet."
+
+    ];
+
+
+    const dareQuestions = [
+
+      "Give me your best pickup line — completely seriously.",
+
+      "Let me choose your next drink.",
+
+      "Recreate your best 'I'm pretending I don't like you' face.",
+
+      "Give me a 10-second dramatic movie breakup speech.",
+
+      "Perform the chorus of a song I choose with me — or drink.",
+
+      "Send a harmless but hilariously confusing emoji to your most recently messaged friend.",
+
+      "Give me three compliments without mentioning appearance.",
+
+      "Let me give you a ridiculous nickname for the next five minutes.",
+
+      "Answer one question while maintaining eye contact — or drink.",
+
+      "Pretend we're meeting for the first time and flirt with me for 30 seconds."
+
+    ];
+
+
+    const bonusQuestions = [
+
+      {
+        type: "FLIRTY",
+        text: "Hold eye contact for 10 seconds. First person to look away drinks."
+      },
+
+      {
+        type: "FLIRTY",
+        text: "Give the other person a compliment you haven't said yet."
+      },
+
+      {
+        type: "FLIRTY",
+        text: "Pick a song that describes the vibe between you right now."
+      },
+
+      {
+        type: "CHAOS",
+        text: "Both point at who is more likely to fall first. No explanation allowed."
+      },
+
+      {
+        type: "CHAOS",
+        text: "Invent a ridiculous story about how you two met."
+      },
+
+      {
+        type: "DRINK",
+        text: "Take a sip together and say 'cheers' for absolutely no reason."
+      },
+
+      {
+        type: "DRINK",
+        text: "The person who laughs first takes a sip."
+      },
+
+      {
+        type: "WILD",
+        text: "Let the other person choose your next drink."
+      },
+
+      {
+        type: "WILD",
+        text: "Swap seats for the next round."
+      },
+
+      {
+        type: "WILD",
+        text: "Take a terrible selfie together."
+      }
+
+    ];
+
+
+    /* ---------------- STATE ---------------- */
+
+    let mode = "mixed";
+
+    let remainingTruth = [];
+    let remainingDare = [];
+    let remainingBonus = [];
+
+    let wheelRotation = 0;
+
+    let isSpinning = false;
+
+
+    /* ---------------- ELEMENTS ---------------- */
+
+    const wheel =
+      document.getElementById("wheel");
+
+    const spinButton =
+      document.getElementById("spinButton");
+
+    const anotherButton =
+      document.getElementById("anotherButton");
+
+    const resetButton =
+      document.getElementById("resetButton");
+
+    const resultType =
+      document.getElementById("resultType");
+
+    const resultText =
+      document.getElementById("resultText");
+
+    const drinkHint =
+      document.getElementById("drinkHint");
+
+    const remainingCount =
+      document.getElementById("remainingCount");
+
+    const modeLabel =
+      document.getElementById("modeLabel");
+
+    const modalBackdrop =
+      document.getElementById("modalBackdrop");
+
+    const cancelReset =
+      document.getElementById("cancelReset");
+
+    const confirmReset =
+      document.getElementById("confirmReset");
+
+    const modeButtons =
+      document.querySelectorAll(".mode-btn");
+
+
+    /* ---------------- INITIALIZE ---------------- */
+
+    function resetArrays() {
+
+      remainingTruth =
+        truthQuestions.map((text, index) => ({
+          id: `truth-${index}`,
+          type: "TRUTH",
+          text
+        }));
+
+      remainingDare =
+        dareQuestions.map((text, index) => ({
+          id: `dare-${index}`,
+          type: "DARE",
+          text
+        }));
+
+      remainingBonus =
+        bonusQuestions.map((item, index) => ({
+          id: `bonus-${index}`,
+          type: item.type,
+          text: item.text
+        }));
+
+      updateStats();
+
+    }
+
+
+    /* ---------------- RANDOM PICK ---------------- */
+
+    function randomItem(array) {
+
+      if (!array.length) {
+        return null;
+      }
+
+      const index =
+        Math.floor(Math.random() * array.length);
+
+      return array[index];
+
+    }
+
+
+    function removeRandom(array) {
+
+      if (!array.length) {
+        return null;
+      }
+
+      const index =
+        Math.floor(Math.random() * array.length);
+
+      return array.splice(index, 1)[0];
+
+    }
+
+
+    /* ---------------- GET CHALLENGE ---------------- */
+
+    function getChallenge() {
+
+      let pool = [];
+
+      if (mode === "truth") {
+
+        pool = remainingTruth;
+
+      } else if (mode === "dare") {
+
+        pool = remainingDare;
+
+      } else {
+
+        pool = [
+          ...remainingTruth,
+          ...remainingDare,
+          ...remainingBonus
+        ];
+
+      }
+
+      /*
+       * If the selected category is empty,
+       * automatically refill that category.
+       */
+
+      if (!pool.length) {
+
+        if (mode === "truth") {
+          remainingTruth =
+            truthQuestions.map((text, index) => ({
+              id: `truth-${index}`,
+              type: "TRUTH",
+              text
+            }));
+        }
+
+        if (mode === "dare") {
+          remainingDare =
+            dareQuestions.map((text, index) => ({
+              id: `dare-${index}`,
+              type: "DARE",
+              text
+            }));
+        }
+
+        if (mode === "mixed") {
+          resetArrays();
+        }
+
+        return getChallenge();
+
+      }
+
+
+      const chosen =
+        randomItem(pool);
+
+
+      if (
+        chosen.type === "TRUTH"
+      ) {
+
+        return removeById(
+          remainingTruth,
+          chosen.id
+        );
+
+      }
+
+
+      if (
+        chosen.type === "DARE"
+      ) {
+
+        return removeById(
+          remainingDare,
+          chosen.id
+        );
+
+      }
+
+
+      return removeById(
+        remainingBonus,
+        chosen.id
+      );
+
+    }
+
+
+    function removeById(array, id) {
+
+      const index =
+        array.findIndex(
+          item => item.id === id
+        );
+
+      if (index === -1) {
+        return null;
+      }
+
+      return array.splice(index, 1)[0];
+
+    }
+
+
+    /* ---------------- WHEEL SPIN ---------------- */
+
+    function spin() {
+
+      if (isSpinning) {
+        return;
+      }
+
+      const challenge =
+        getChallenge();
+
+      if (!challenge) {
+        return;
+      }
+
+      isSpinning = true;
+
+      spinButton.disabled = true;
+      anotherButton.disabled = true;
+
+      spinButton.textContent =
+        "SPINNING...";
+
+      resultType.textContent =
+        "AND THE RESULT IS...";
+
+      resultText.textContent =
+        "👀";
+
+      drinkHint.textContent =
+        "The wheel has decided.";
+
+      /*
+       * Every spin adds multiple complete rotations
+       * plus a random final angle.
+       */
+
+      const fullSpins =
+        5 + Math.floor(Math.random() * 3);
+
+      const randomAngle =
+        Math.floor(Math.random() * 360);
+
+      wheelRotation +=
+        fullSpins * 360 +
+        randomAngle;
+
+      wheel.style.transform =
+        `rotate(${wheelRotation}deg)`;
+
+
+      const reducedMotion =
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+
+      const delay =
+        reducedMotion ? 100 : 4250;
+
+
+      setTimeout(() => {
+
+        showChallenge(challenge);
+
+        isSpinning = false;
+
+        spinButton.disabled = false;
+        anotherButton.disabled = false;
+
+        spinButton.textContent =
+          "SPIN AGAIN";
+
+        updateStats();
+
+      }, delay);
+
+    }
+
+
+    /* ---------------- SHOW RESULT ---------------- */
+
+    function showChallenge(challenge) {
+
+      if (!challenge) {
+        return;
+      }
+
+      resultType.textContent =
+        challenge.type;
+
+      resultText.textContent =
+        challenge.text;
+
+
+      if (
+        challenge.type === "TRUTH"
+      ) {
+
+        drinkHint.textContent =
+          "Don't want to answer? Take a drink.";
+
+      } else {
+
+        drinkHint.textContent =
+          "Don't want to do it? Take a drink.";
+
+      }
+
+    }
+
+
+    /* ---------------- ANOTHER ---------------- */
+
+    function another() {
+
+      if (isSpinning) {
+        return;
+      }
+
+      const challenge =
+        getChallenge();
+
+      if (!challenge) {
+        return;
+      }
+
+      showChallenge(challenge);
+
+      /*
+       * Slight visual movement so "Another One"
+       * still feels interactive.
+       */
+
+      resultText.animate(
+        [
+          {
+            opacity: 0,
+            transform: "translateY(8px)"
+          },
+          {
+            opacity: 1,
+            transform: "translateY(0)"
+          }
+        ],
+        {
+          duration: 220,
+          easing: "ease-out"
+        }
+      );
+
+      updateStats();
+
+    }
+
+
+    /* ---------------- MODE ---------------- */
+
+    function setMode(newMode) {
+
+      if (
+        newMode !== "truth" &&
+        newMode !== "dare" &&
+        newMode !== "mixed"
+      ) {
+        return;
+      }
+
+      mode = newMode;
+
+
+      modeButtons.forEach(button => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset.mode === mode
+        );
+
+      });
+
+
+      if (mode === "truth") {
+
+        modeLabel.textContent =
+          "Truth mode";
+
+      } else if (mode === "dare") {
+
+        modeLabel.textContent =
+          "Dare mode";
+
+      } else {
+
+        modeLabel.textContent =
+          "Mixed mode";
+
+      }
+
+
+      resultType.textContent =
+        "MODE CHANGED";
+
+      resultText.textContent =
+        "Ready when you are 👀";
+
+      drinkHint.textContent =
+        "Spin the wheel for your next challenge.";
+
+      updateStats();
+
+    }
+
+
+    /* ---------------- STATS ---------------- */
+
+    function updateStats() {
+
+      let count = 0;
+
+      if (mode === "truth") {
+
+        count =
+          remainingTruth.length;
+
+      } else if (mode === "dare") {
+
+        count =
+          remainingDare.length;
+
+      } else {
+
+        count =
+          remainingTruth.length +
+          remainingDare.length +
+          remainingBonus.length;
+
+      }
+
+
+      remainingCount.textContent =
+        `${count} challenge${count === 1 ? "" : "s"} left`;
+
+    }
+
+
+    /* ---------------- RESET MODAL ---------------- */
+
+    function openResetModal() {
+
+      if (isSpinning) {
+        return;
+      }
+
+      modalBackdrop.classList.add("show");
+
+    }
+
+
+    function closeResetModal() {
+
+      modalBackdrop.classList.remove("show");
+
+    }
+
+
+    function confirmGameReset() {
+
+      resetArrays();
+
+      wheelRotation = 0;
+
+      wheel.style.transform =
+        "rotate(0deg)";
+
+      resultType.textContent =
+        "YOUR CHALLENGE";
+
+      resultText.textContent =
+        "Give the wheel a spin 👀";
+
+      drinkHint.textContent =
+        "Refuse the challenge? Take a drink.";
+
+      closeResetModal();
+
+      updateStats();
+
+    }
+
+
+    /* ---------------- EVENTS ---------------- */
+
+    spinButton.addEventListener(
+      "click",
+      spin
+    );
+
+
+    anotherButton.addEventListener(
+      "click",
+      another
+    );
+
+
+    resetButton.addEventListener(
+      "click",
+      openResetModal
+    );
+
+
+    cancelReset.addEventListener(
+      "click",
+      closeResetModal
+    );
+
+
+    confirmReset.addEventListener(
+      "click",
+      confirmGameReset
+    );
+
+
+    modalBackdrop.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target === modalBackdrop
+        ) {
+
+          closeResetModal();
+
+        }
+
+      }
+    );
+
+
+    modeButtons.forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          setMode(
+            button.dataset.mode
+          );
+
+        }
+      );
+
+    });
+
+
+    /* ---------------- KEYBOARD ---------------- */
+
+    document.addEventListener(
+      "keydown",
+      event => {
+
+        if (event.key === "Escape") {
+
+          closeResetModal();
+
+        }
+
+        if (
+          event.code === "Space" &&
+          !isSpinning &&
+          !modalBackdrop.classList.contains("show")
+        ) {
+
+          event.preventDefault();
+
+          spin();
+
+        }
+
+      }
+    );
+
+
+    /* ---------------- START ---------------- */
+
+    resetArrays();
+
+  </script>
+
+</body>
+</html>
